@@ -5,7 +5,7 @@ import LoginPage from "./components/login/LoginPage";
 
 async function Home() {
   const session = await getServerSession(authOptions);
-  return <>{!session ? <ChatPage /> : <LoginPage />}</>;
+  return <>{session ? <ChatPage /> : <LoginPage />}</>;
 }
 
 export default Home;
