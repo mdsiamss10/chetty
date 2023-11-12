@@ -28,7 +28,7 @@ function LoginPage() {
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-white">
               You asked<span className="text-purple-500">.</span>
             </h1>
-            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold text-white">
+            <h1 className="text-[3.65rem] sm:text-7xl md:text-8xl lg:text-9xl font-extrabold text-white">
               I delivered<span className="text-purple-500">.</span>
             </h1>
           </motion.div>
