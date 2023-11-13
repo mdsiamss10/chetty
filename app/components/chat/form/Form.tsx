@@ -39,7 +39,7 @@ function Form() {
             type="text"
             value={text}
             onChange={async (e) => {
-              setText(e.target.value.trim());
+              setText(e.target.value);
             }}
             className="bg-transparent focus:outline-none w-full"
             placeholder="Type here"
