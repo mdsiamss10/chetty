@@ -11,6 +11,10 @@ function Form() {
   const session = useSession(); // Using the useSession hook to get authentication status
 
   useEffect(() => {
+    if (session.status === "loading") return;
+  }, []);
+
+  useEffect(() => {
     // Effect to update isTyping in user collection based on the length of the input text
     addIsTypingToUserColl(
       text.length ? true : false,
@@ -33,7 +37,7 @@ function Form() {
               session.data?.user?.image
             );
           }}
-          className="w-full flex"
+          className="w-full flex gap-2"
         >
           <input
             type="text"
@@ -41,7 +45,7 @@ function Form() {
             onChange={async (e) => {
               setText(e.target.value);
             }}
-            className="bg-transparent focus:outline-none w-full"
+            className="bg-transparent focus:outline-none w-full pr-4 glass rounded-full rounded-tl-none rounded-bl-none "
             placeholder="Type here"
           />
           <button
@@ -51,7 +55,9 @@ function Form() {
                 : "bg-[#5E18D7]"
             }`}
           >
-            <RiSendPlaneFill />
+            <span className="text-xl">
+              <RiSendPlaneFill />
+            </span>
           </button>
         </form>
       </div>

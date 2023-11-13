@@ -2,7 +2,7 @@
 
 "use client"; // Importing "use client" (it seems like a custom import, not standard JavaScript/React)
 
-import { addIsTypingToUserColl } from "@/actions"; // Importing action for adding isTyping to user collection
+import { addIsTypingToUserColl, updateSeenBy } from "@/actions"; // Importing action for adding isTyping to user collection
 import { db } from "@/lib/firebase.config"; // Importing Firebase configuration
 import { MessageType } from "@/type"; // Importing MessageType type
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
@@ -17,20 +17,37 @@ import Navbar from "./navbar/Navbar"; // Importing Navbar component
 function ChatPage() {
   const session = useSession(); // Using the useSession hook to get authentication status
   const [messages, setMessages] = useState<MessageType[] | []>([]); // State for storing messages
-  const [currentEmail, setCurrentEmail] = useState<string | undefined>(
-    undefined
-  );
+  const [messageLoading, setMessageLoading] = useState(true);
+  const [isuserOnPage, setIsUserOnPage] = useState(true);
 
   useEffect(() => {
-    // Effect to update currentEmail when session is authenticated
-    if (session.status === "authenticated") {
-      const userEmail = session?.data?.user?.email;
-      if (userEmail) {
-        console.log(userEmail);
-        setCurrentEmail(userEmail);
-      }
-    }
-  }, [session, session.status]);
+    if (session.status === "loading") return;
+  }, []);
+
+  //! When user leaves the page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsUserOnPage(!document.hidden);
+    };
+
+    const handleFocus = () => {
+      setIsUserOnPage(true);
+    };
+
+    const handleBlur = () => {
+      setIsUserOnPage(false);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, [session]);
 
   //! Get all messages
   useEffect(() => {
@@ -42,7 +59,10 @@ function ChatPage() {
         snapshots.docs.map((doc) => ({ ...(doc.data() as any), docID: doc.id }))
       );
     });
-    return unsubscribe; // Cleanup function to unsubscribe from Firestore snapshots
+    setMessageLoading(false);
+    return () => {
+      unsubscribe();
+    }; // Cleanup function to unsubscribe from Firestore snapshots
   }, []);
 
   // //! Get all users
@@ -83,7 +103,7 @@ function ChatPage() {
     return () => {
       unsubscribe(); // Cleanup function to unsubscribe from Firestore snapshots
     };
-  }, []);
+  }, [messages]);
 
   //! Function to add isTyping false when a user is logged in
   useEffect(() => {
@@ -135,10 +155,21 @@ function ChatPage() {
     <>
       <div className="container mx-auto max-w-4xl max-h-[100dvh] h-[100dvh] p-2 px-0 pr-2 flex flex-col">
         <Navbar />
-        <div className="flex-grow overflow-y-auto overflow-x-hidden p-2 no-scrollbar scroll-smooth">
-          <div className="h-full w-full" />
+        <div
+          className={`flex-grow overflow-y-auto overflow-x-hidden p-2 no-scrollbar scroll-smooth ${
+            (messageLoading || !messages.length) &&
+            "flex flex-col items-center justify-center"
+          }`}
+        >
+          {messageLoading && (
+            <span className="loading loading-spinner w-[2rem] opacity-70 text-white" />
+          )}
+          {!messages.length && <p>No messages yet!</p>}
           {messages.map((message, index) => (
             <React.Fragment key={index}>
+              {message.email !== session.data?.user?.email &&
+                isuserOnPage &&
+                void updateSeenBy(message.createdAt)}
               {message.email === session.data?.user?.email ? (
                 <>
                   {!message.isTyping && (
@@ -146,6 +177,7 @@ function ChatPage() {
                       <MessageFromMe
                         text={message.text}
                         isTyping={false}
+                        isSeen={message.isSeen}
                         timestamp={message.timestamp}
                       />
                     </>

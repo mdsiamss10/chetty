@@ -1,6 +1,7 @@
 export interface MessageType {
   text?: string;
   isTyping: boolean;
+  isSeen?: boolean;
   createdAt?: any;
   name?: string;
   image?: string;

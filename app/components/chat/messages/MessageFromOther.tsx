@@ -12,7 +12,7 @@ function MessageFromOther({
 }: MessageType) {
   return (
     <>
-      <div className="chat chat-start z-[-1]">
+      <div className="chat chat-start z-[-1] my-2">
         <div className="chat-image avatar">
           <Image
             src={image as string}
@@ -23,6 +23,12 @@ function MessageFromOther({
             className="rounded-full"
             title={email}
           />
+        </div>
+        <div className="chat-header">
+          {/* Displaying the first name of the user */}
+          <span className="text-[0.675rem] opacity-50">
+            {name?.split(" ")[0]}
+          </span>{" "}
         </div>
         <div className="chat-bubble glass text-sm flex items-center my-1">
           {isTyping ? (
@@ -36,10 +42,13 @@ function MessageFromOther({
           )}
         </div>
         <div className="chat-footer opacity-50 text-[.675rem]">
-          <span>{name?.split(" ")[0]}</span>{" "}
-          {/* Displaying the first name of the user */}
-          <span> - </span>
-          <span>{moment(timestamp).fromNow()}</span>{" "}
+          <span>
+            {moment(timestamp)
+              .fromNow()
+              .replace(/(minute[s]?)/, "min")
+              .replace(/(hour[s]?)/, "hr")
+              .replace(/(day[s]?)/, "day")}
+          </span>{" "}
           {/* Displaying the timestamp in a human-readable format using moment */}
         </div>
       </div>

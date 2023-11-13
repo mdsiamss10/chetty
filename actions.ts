@@ -34,6 +34,7 @@ export async function handleFormSubmit(
         timestamp: Date.now(),
         servertimestamp: serverTimestamp(),
         email,
+        isSeen: false,
       });
     } catch (error: any) {
       alert(error.message);
@@ -52,5 +53,19 @@ export async function addIsTypingToUserColl(
   querySnapshot.forEach(async ({ id }) => {
     const userDocRef = doc(db, "users", id);
     await setDoc(userDocRef, { isTyping: isUserTyping }, { merge: true });
+  });
+}
+
+export async function updateSeenBy(createdAt: Date) {
+  const messageColRef = collection(db, "messages");
+  const messageQuery = query(
+    messageColRef,
+    where("createdAt", "==", createdAt ?? "")
+  );
+  const querySnapshot = await getDocs(messageQuery);
+
+  querySnapshot.forEach(async ({ id }) => {
+    const messageDocRef = doc(db, "messages", id);
+    await setDoc(messageDocRef, { isSeen: true }, { merge: true });
   });
 }
