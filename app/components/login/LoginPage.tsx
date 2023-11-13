@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import LoginButton from "./LoginButton";
 
 function LoginPage() {
@@ -10,14 +9,24 @@ function LoginPage() {
       <div className="flex h-[100dvh] login_page_main flex-col justify-center items-center">
         <div className="p-3 w-screen md:w-fit md:backdrop-blur rounded-md text-center h-full md:h-fit flex flex-col justify-center items-center">
           <motion.div initial={{ y: 50 }} animate={{ y: -20 }}>
-            <Image
-              src="/logo.png"
-              width={1000}
-              height={1000}
-              className="w-[20rem] mx-auto cursor-pointer"
-              quality={1}
-              alt="Image"
-            />
+            <span className="text-2xl md:text-5xl font-extrabold select-none cursor-pointer">
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-primary"
+              >
+                C
+              </motion.span>
+              <span>he</span>
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-primary"
+              >
+                tt
+              </motion.span>
+              y<span className="text-primary">.</span>
+            </span>
           </motion.div>
 
           <motion.div
@@ -29,7 +38,14 @@ function LoginPage() {
               You asked<span className="text-purple-500">.</span>
             </h1>
             <h1 className="text-[3.65rem] sm:text-7xl md:text-8xl lg:text-9xl font-extrabold text-white">
-              I delivered<span className="text-purple-500">.</span>
+              I delivered
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-purple-500"
+              >
+                .
+              </motion.span>
             </h1>
           </motion.div>
           <motion.div

@@ -1,20 +1,43 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { FormEvent, useState } from "react";
+import { addIsTypingToUserColl, handleFormSubmit } from "@/actions";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { RiSendPlaneFill } from "react-icons/ri";
 
 function Form() {
   const [text, setText] = useState("");
-  async function handleFormSubmit(e: FormEvent) {
-    e.preventDefault();
-  }
+  const session = useSession();
+
+  useEffect(() => {
+    addIsTypingToUserColl(
+      text.length ? true : false,
+      session.data?.user?.email
+    );
+  }, [text]);
+
   return (
     <>
       <div className="w-full flex items-center glass p-3 px-10 pr-3 rounded-full rounded-tl-sm rounded-bl-sm">
-        <form onSubmit={handleFormSubmit} className="w-full flex">
+        <form
+          onSubmit={async (e) => {
+            await handleFormSubmit(
+              e,
+              text,
+              session.data?.user?.name,
+              session.data?.user?.email,
+              session.data?.user?.image
+            );
+            setText("");
+          }}
+          className="w-full flex"
+        >
           <input
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={async (e) => {
+              setText(e.target.value);
+            }}
             className="bg-transparent focus:outline-none w-full"
             placeholder="Type here"
           />

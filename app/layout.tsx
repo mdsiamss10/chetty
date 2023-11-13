@@ -5,7 +5,7 @@ import AnimatedBackground from "./components/AnimatedBackground";
 import "./css/ani_background.css";
 import "./css/globals.css";
 
-const monsterrat = Montserrat({ weight: "700", subsets: ["latin"] });
+const monsterrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
