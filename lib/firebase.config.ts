@@ -6,12 +6,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDne940YQNjuREJmeFmoIHf3dSjBRzv8sE",
-  authDomain: "chettybysiam.firebaseapp.com",
-  projectId: "chettybysiam",
-  storageBucket: "chettybysiam.appspot.com",
-  messagingSenderId: "171617297869",
-  appId: "1:171617297869:web:ff2b394a84fe122d0c1084",
+  apiKey: "AIzaSyBzDxXhbsf1WC6hdRJPwYtlKJ1_8RYQilk",
+  authDomain: "chettyappbysiam.firebaseapp.com",
+  projectId: "chettyappbysiam",
+  storageBucket: "chettyappbysiam.appspot.com",
+  messagingSenderId: "839203325078",
+  appId: "1:839203325078:web:d64245d6fd25d844452eb7",
 };
 
 // Initialize Firebase

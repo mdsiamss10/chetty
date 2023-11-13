@@ -1,4 +1,5 @@
 import { MessageType } from "@/type"; // Importing MessageType type
+import { motion } from "framer-motion";
 import moment from "moment"; // Importing the moment library for date/time formatting
 import Image from "next/image"; // Importing Image component from next/image
 
@@ -12,7 +13,13 @@ function MessageFromOther({
 }: MessageType) {
   return (
     <>
-      <div className="chat chat-start z-[-1] my-2">
+      <motion.div
+        key={timestamp}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="chat chat-start z-[-1] my-2"
+      >
         <div className="chat-image avatar">
           <Image
             src={image as string}
@@ -51,7 +58,7 @@ function MessageFromOther({
           </span>{" "}
           {/* Displaying the timestamp in a human-readable format using moment */}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

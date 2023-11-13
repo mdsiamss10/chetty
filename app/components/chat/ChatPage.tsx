@@ -8,6 +8,7 @@ import { MessageType } from "@/type"; // Importing MessageType type
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
 import { useSession } from "next-auth/react"; // Importing useSession hook from next-auth
 import React, { useEffect, useRef, useState } from "react"; // Importing React and its hooks/components
+import AnimatedBackground from "../AnimatedBackground";
 import PasswordModal from "./PasswordModal"; // Importing PasswordModal component
 import Form from "./form/Form"; // Importing Form component
 import MessageFromMe from "./messages/MessageFromMe"; // Importing MessageFromMe component
@@ -19,7 +20,9 @@ function ChatPage() {
   const [messages, setMessages] = useState<MessageType[] | []>([]); // State for storing messages
   const [messageLoading, setMessageLoading] = useState(true);
   const [isuserOnPage, setIsUserOnPage] = useState(true);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [containerHeight, setContainerHeight] = useState<any>(
+    window.visualViewport?.height || window.innerHeight
+  );
 
   useEffect(() => {
     if (session.status === "loading") return;
@@ -27,24 +30,18 @@ function ChatPage() {
 
   //! Change viewport height
   useEffect(() => {
-    const handleResize = () => {
-      setViewportHeight(window.innerHeight);
+    const updateHeight = () => {
+      setContainerHeight(window.visualViewport?.height || window.innerHeight);
     };
 
-    const handleScroll = () => {
-      setViewportHeight(window.innerHeight);
-    };
-
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", updateHeight);
+    window.addEventListener("orientationchange", updateHeight);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateHeight);
+      window.removeEventListener("orientationchange", updateHeight);
     };
-  }, []);
+  }, [containerHeight]);
 
   //! When user leaves the page
   useEffect(() => {
@@ -176,9 +173,11 @@ function ChatPage() {
 
   return (
     <>
+      <AnimatedBackground containerHeight={containerHeight} />
       <div
         className={`container mx-auto max-w-4xl p-2 px-0 pr-2 flex flex-col`}
-        style={{ height: viewportHeight, maxHeight: viewportHeight }}
+        // style={{ height: viewportHeight, maxHeight: viewportHeight }}
+        style={{ height: containerHeight, maxHeight: containerHeight }}
       >
         <Navbar />
         <div
