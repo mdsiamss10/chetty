@@ -18,8 +18,6 @@
 }
 
 body {
-  /* min-height: -webkit-fill-available; */
-  max-height: -webkit-fill-available;
   overflow-x: hidden;
   color: #fff;
 }

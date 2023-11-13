@@ -19,9 +19,31 @@ function ChatPage() {
   const [messages, setMessages] = useState<MessageType[] | []>([]); // State for storing messages
   const [messageLoading, setMessageLoading] = useState(true);
   const [isuserOnPage, setIsUserOnPage] = useState(true);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
   useEffect(() => {
     if (session.status === "loading") return;
+  }, []);
+
+  //! Change viewport height
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+    };
+
+    const handleScroll = () => {
+      setViewportHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   //! When user leaves the page
@@ -133,6 +155,7 @@ function ChatPage() {
     );
   }
 
+  //! Scroll to bottom always
   const ScrollToBottom = () => {
     // Component to scroll to the bottom of the chat
     const elementRef = useRef<HTMLDivElement>(null);
@@ -153,7 +176,10 @@ function ChatPage() {
 
   return (
     <>
-      <div className="container mx-auto max-w-4xl max-h-[100dvh] h-[100dvh] p-2 px-0 pr-2 flex flex-col">
+      <div
+        className={`container mx-auto max-w-4xl p-2 px-0 pr-2 flex flex-col`}
+        style={{ height: viewportHeight, maxHeight: viewportHeight }}
+      >
         <Navbar />
         <div
           className={`flex-grow overflow-y-auto overflow-x-hidden p-2 no-scrollbar scroll-smooth ${
