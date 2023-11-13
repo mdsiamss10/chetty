@@ -1,24 +1,40 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-"use client";
+/* eslint-disable react-hooks/exhaustive-deps */ // Disable exhaustive-deps rule for React Hooks
 
-import { addIsTypingToUserColl } from "@/actions";
-import { db } from "@/lib/firebase.config";
-import { MessageType } from "@/type";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
-import PasswordModal from "./PasswordModal";
-import Form from "./form/Form";
-import MessageFromMe from "./messages/MessageFromMe";
-import MessageFromOther from "./messages/MessageFromOther";
-import Navbar from "./navbar/Navbar";
+"use client"; // Importing "use client" (it seems like a custom import, not standard JavaScript/React)
+
+import { addIsTypingToUserColl } from "@/actions"; // Importing action for adding isTyping to user collection
+import { db } from "@/lib/firebase.config"; // Importing Firebase configuration
+import { MessageType } from "@/type"; // Importing MessageType type
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
+import { useSession } from "next-auth/react"; // Importing useSession hook from next-auth
+import React, { useEffect, useRef, useState } from "react"; // Importing React and its hooks/components
+import PasswordModal from "./PasswordModal"; // Importing PasswordModal component
+import Form from "./form/Form"; // Importing Form component
+import MessageFromMe from "./messages/MessageFromMe"; // Importing MessageFromMe component
+import MessageFromOther from "./messages/MessageFromOther"; // Importing MessageFromOther component
+import Navbar from "./navbar/Navbar"; // Importing Navbar component
 
 function ChatPage() {
-  const session = useSession();
-  const [messages, setMessages] = useState<MessageType[] | []>([]);
+  const session = useSession(); // Using the useSession hook to get authentication status
+  const [messages, setMessages] = useState<MessageType[] | []>([]); // State for storing messages
+  const [currentEmail, setCurrentEmail] = useState<string | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    // Effect to update currentEmail when session is authenticated
+    if (session.status === "authenticated") {
+      const userEmail = session?.data?.user?.email;
+      if (userEmail) {
+        console.log(userEmail);
+        setCurrentEmail(userEmail);
+      }
+    }
+  }, [session, session.status]);
 
   //! Get all messages
   useEffect(() => {
+    // Effect to fetch and update messages from Firestore
     const collectionRef = collection(db, "messages");
     const q = query(collectionRef, orderBy("servertimestamp", "asc"));
     const unsubscribe = onSnapshot(q, (snapshots) => {
@@ -26,26 +42,50 @@ function ChatPage() {
         snapshots.docs.map((doc) => ({ ...(doc.data() as any), docID: doc.id }))
       );
     });
-    return unsubscribe;
+    return unsubscribe; // Cleanup function to unsubscribe from Firestore snapshots
   }, []);
 
   // //! Get all users
-  // useEffect(() => {
-  //   const collectionRef = collection(db, "users");
-  //   const q = query(collectionRef);
-  //   const unsubscribe = onSnapshot(q, (snapshots) => {
-  //     snapshots.docs.forEach((doc) => {
-  //       const data = doc.data();
-  //       if (data.isTyping) {
-  //         setMessages((prev) => [...prev, data as any]);
-  //       }
-  //     });
-  //   });
-  //   return unsubscribe;
-  // }, []);
+  useEffect(() => {
+    // Effect to fetch and update users from Firestore
+    const collectionRef = collection(db, "users");
+    const q = query(collectionRef);
+
+    const unsubscribe = onSnapshot(q, (snapshots) => {
+      snapshots.docs.forEach((doc) => {
+        const data = doc.data();
+        const email = data.email;
+
+        setMessages((prevMessages) => {
+          const index = prevMessages.findIndex(
+            (message) => message.isTyping === true && message.email == email
+          );
+
+          if (data.isTyping) {
+            if (index === -1) {
+              return [...prevMessages, data as any];
+            }
+          } else {
+            // If isTyping is false and the email exists in setMessages, remove it
+            if (index !== -1) {
+              const updatedMessages = [...prevMessages];
+              updatedMessages.splice(index, 1);
+              return updatedMessages;
+            }
+          }
+
+          // If no changes needed, return the current state
+          return prevMessages;
+        });
+      });
+    });
+
+    return () => {
+      unsubscribe(); // Cleanup function to unsubscribe from Firestore snapshots
+    };
+  }, []);
 
   //! Function to add isTyping false when a user is logged in
-
   useEffect(() => {
     addIsTypingToUserColl(false, session.data?.user?.email);
   }, [session]);
@@ -59,7 +99,7 @@ function ChatPage() {
   }, []);
 
   if (localStorage.getItem("isPasswordSet") !== "true") {
-    return <PasswordModal />;
+    return <PasswordModal />; // Return PasswordModal component if password is not set
   }
 
   //! Show loading if user is not loaded
@@ -74,6 +114,7 @@ function ChatPage() {
   }
 
   const ScrollToBottom = () => {
+    // Component to scroll to the bottom of the chat
     const elementRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -95,8 +136,9 @@ function ChatPage() {
       <div className="container mx-auto max-w-4xl max-h-[100dvh] h-[100dvh] p-2 px-0 pr-2 flex flex-col">
         <Navbar />
         <div className="flex-grow overflow-y-auto overflow-x-hidden p-2 no-scrollbar scroll-smooth">
-          {messages.map((message) => (
-            <>
+          <div className="h-full w-full" />
+          {messages.map((message, index) => (
+            <React.Fragment key={index}>
               {message.email === session.data?.user?.email ? (
                 <>
                   {!message.isTyping && (
@@ -119,7 +161,7 @@ function ChatPage() {
                   timestamp={message.timestamp}
                 />
               )}
-            </>
+            </React.Fragment>
           ))}
           <ScrollToBottom />
         </div>

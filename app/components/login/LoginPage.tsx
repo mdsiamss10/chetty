@@ -1,15 +1,19 @@
-"use client";
+"use client"; // Importing "use client" (it seems like a custom import, not standard JavaScript/React)
 
-import { motion } from "framer-motion";
-import LoginButton from "./LoginButton";
+import { motion } from "framer-motion"; // Importing motion from framer-motion library
+import LoginButton from "./LoginButton"; // Importing LoginButton component
 
 function LoginPage() {
   return (
     <>
+      {/* Main container for the login page */}
       <div className="flex h-[100dvh] login_page_main flex-col justify-center items-center">
+        {/* Container for the login content */}
         <div className="p-3 w-screen md:w-fit md:backdrop-blur rounded-md text-center h-full md:h-fit flex flex-col justify-center items-center">
+          {/* Animated logo and title */}
           <motion.div initial={{ y: 50 }} animate={{ y: -20 }}>
             <span className="text-2xl md:text-5xl font-extrabold select-none cursor-pointer">
+              {/* Animated individual letters in the title */}
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -29,6 +33,7 @@ function LoginPage() {
             </span>
           </motion.div>
 
+          {/* Animated tagline */}
           <motion.div
             initial={{ y: 50 }}
             animate={{ y: 5 }}
@@ -48,6 +53,8 @@ function LoginPage() {
               </motion.span>
             </h1>
           </motion.div>
+
+          {/* Animated login button */}
           <motion.div
             initial={{ y: 50 }}
             animate={{ y: 25 }}
