@@ -7,7 +7,7 @@
 .background {
   position: fixed;
   width: 100vw;
-  height: 20vh;
+  height: -webkit-fill-available;
   top: 0;
   left: 0;
   background: #0d001f;
