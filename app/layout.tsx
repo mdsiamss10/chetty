@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={monsterrat.className}>
-        <AnimatedBackground containerHeight={"auto"} />
+        <AnimatedBackground />
         <AuthSessionProvider>{children}</AuthSessionProvider>
       </body>
     </html>

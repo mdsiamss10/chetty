@@ -7,8 +7,8 @@ import { db } from "@/lib/firebase.config"; // Importing Firebase configuration
 import { MessageType } from "@/type"; // Importing MessageType type
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
 import { useSession } from "next-auth/react"; // Importing useSession hook from next-auth
-import React, { useEffect, useRef, useState } from "react"; // Importing React and its hooks/components
-import AnimatedBackground from "../AnimatedBackground";
+import React, { useEffect, useState } from "react"; // Importing React and its hooks/components
+import ScrollToBottomCond from "../ScrollToBottomCond";
 import PasswordModal from "./PasswordModal"; // Importing PasswordModal component
 import Form from "./form/Form"; // Importing Form component
 import MessageFromMe from "./messages/MessageFromMe"; // Importing MessageFromMe component
@@ -31,7 +31,11 @@ function ChatPage() {
   //! Change viewport height
   useEffect(() => {
     const updateHeight = () => {
-      setContainerHeight(window.visualViewport?.height || window.innerHeight);
+      const newHeight = window.visualViewport?.height || window.innerHeight;
+      setContainerHeight(newHeight);
+
+      // Change body's maximum height
+      document.body.style.maxHeight = `${newHeight}px`;
     };
 
     window.addEventListener("resize", updateHeight);
@@ -41,7 +45,7 @@ function ChatPage() {
       window.removeEventListener("resize", updateHeight);
       window.removeEventListener("orientationchange", updateHeight);
     };
-  }, [containerHeight]);
+  }, []);
 
   //! When user leaves the page
   useEffect(() => {
@@ -145,43 +149,23 @@ function ChatPage() {
   if (session.status === "loading") {
     return (
       <>
-        <div className="h-[100dvh] grid place-items-center">
+        <div className="flex items-center justify-center h-[100dvh]">
           <span className="loading loading-spinner w-[4rem] opacity-70 text-white" />
         </div>
       </>
     );
   }
 
-  //! Scroll to bottom always
-  const ScrollToBottom = () => {
-    // Component to scroll to the bottom of the chat
-    const elementRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const element = elementRef.current;
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest",
-        });
-      }
-    }, []);
-
-    return <div ref={elementRef} />;
-  };
-
   return (
     <>
-      <AnimatedBackground containerHeight={containerHeight} />
+      {/* <AnimatedBackground containerHeight={containerHeight} /> */}
       <div
-        className={`container mx-auto max-w-4xl p-2 px-0 pr-2 flex flex-col`}
-        // style={{ height: viewportHeight, maxHeight: viewportHeight }}
-        style={{ height: containerHeight, maxHeight: containerHeight }}
+        className={`container mx-auto max-w-4xl p-2 px-0 pr-2 flex flex-col h-[100dvh] max-h-[100dvh]`}
+        // style={{ height: containerHeight, maxHeight: containerHeight }}
       >
         <Navbar />
         <div
-          className={`flex-grow overflow-y-auto overflow-x-hidden p-2 no-scrollbar scroll-smooth ${
+          className={`flex-grow overflow-x-hidden p-2 no-scrollbar scroll-smooth ${
             (messageLoading || !messages.length) &&
             "flex flex-col items-center justify-center"
           }`}
@@ -220,7 +204,7 @@ function ChatPage() {
               )}
             </React.Fragment>
           ))}
-          <ScrollToBottom />
+          <ScrollToBottomCond messages={messages ?? []} />
         </div>
         <Form />
       </div>
