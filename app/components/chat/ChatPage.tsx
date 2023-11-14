@@ -7,8 +7,7 @@ import { db } from "@/lib/firebase.config"; // Importing Firebase configuration
 import { MessageType } from "@/type"; // Importing MessageType type
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
 import { useSession } from "next-auth/react"; // Importing useSession hook from next-auth
-import React, { useEffect, useState } from "react"; // Importing React and its hooks/components
-import ScrollToBottomCond from "../ScrollToBottomCond";
+import React, { useEffect, useRef, useState } from "react"; // Importing React and its hooks/components
 import PasswordModal from "./PasswordModal"; // Importing PasswordModal component
 import Form from "./form/Form"; // Importing Form component
 import MessageFromMe from "./messages/MessageFromMe"; // Importing MessageFromMe component
@@ -27,6 +26,24 @@ function ChatPage() {
   useEffect(() => {
     if (session.status === "loading") return;
   }, []);
+
+  const ScrollToBottom = () => {
+    // Component to scroll to the bottom of the chat
+    const elementRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const element = elementRef.current;
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
+    }, [messages]);
+
+    return <div ref={elementRef} />;
+  };
 
   //! Change viewport height
   useEffect(() => {
@@ -204,9 +221,10 @@ function ChatPage() {
               )}
             </React.Fragment>
           ))}
-          <ScrollToBottomCond messages={messages ?? []} />
+          <ScrollToBottom />
         </div>
         <Form />
+        <ScrollToBottom />
       </div>
     </>
   );
