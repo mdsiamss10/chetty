@@ -1,10 +1,13 @@
 "use client"; // Importing "use client" (it seems like a custom import, not standard JavaScript/React)
 
+import { deleteMessage } from "@/actions";
 import { signOut, useSession } from "next-auth/react"; // Importing signOut and useSession from next-auth
 import Image from "next/image"; // Importing Image component from next/image
+import { useState } from "react";
 
 function Navbar() {
   const session = useSession(); // Using the useSession hook to get authentication status
+  const [password, setPassword] = useState("");
 
   return (
     <>
@@ -42,7 +45,64 @@ function Navbar() {
                   className="text-red-500 hover:text-red-400 transition-all underline cursor-pointer select-none"
                 >
                   Click here.
+                </span>{" "}
+                <span>To delete all messages,</span>{" "}
+                <span
+                  className="text-red-500 hover:text-red-400 transition-all underline cursor-pointer select-none"
+                  onClick={() =>
+                    // @ts-ignore
+                    document.getElementById("my_modal_2")?.showModal()
+                  }
+                >
+                  Click here.
                 </span>
+                {/* Modal with ID "my_modal_1" */}
+                <dialog id="my_modal_2" className="modal">
+                  <div className="modal-box">
+                    <h3 className="font-bold text-lg">Hello!</h3>
+                    <p className="py-4">
+                      Please enter the security password to continue:
+                    </p>
+
+                    {/* Form for entering the password */}
+                    <form
+                      className="w-full"
+                      autoComplete="off"
+                      onSubmit={async () => {
+                        if (password.length && password === "iamcow") {
+                          await deleteMessage();
+                        }
+                      }}
+                    >
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                        }}
+                        className="input input-primary w-full"
+                        placeholder="******"
+                      />
+                      <input
+                        type="submit"
+                        value="DELETE"
+                        disabled={
+                          password.length && password === "iamcow"
+                            ? false
+                            : true
+                        } // Disable the submit button if the password is not entered or does not match
+                        className="btn btn-primary w-full mt-4"
+                      />
+                    </form>
+
+                    {/* Hidden modal action */}
+                    <div className="modal-action hidden">
+                      <form method="dialog">
+                        <button className="btn">Close</button>
+                      </form>
+                    </div>
+                  </div>
+                </dialog>
               </p>
             </div>
           </div>

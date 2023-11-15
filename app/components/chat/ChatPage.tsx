@@ -2,7 +2,7 @@
 
 "use client"; // Importing "use client" (it seems like a custom import, not standard JavaScript/React)
 
-import { addIsTypingToUserColl, updateSeenBy } from "@/actions"; // Importing action for adding isTyping to user collection
+import { addIsTypingToUserColl, updateIsSeen } from "@/actions"; // Importing action for adding isTyping to user collection
 import { db } from "@/lib/firebase.config"; // Importing Firebase configuration
 import { MessageType } from "@/type"; // Importing MessageType type
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
@@ -19,13 +19,46 @@ function ChatPage() {
   const [messages, setMessages] = useState<MessageType[] | []>([]); // State for storing messages
   const [messageLoading, setMessageLoading] = useState(true);
   const [isuserOnPage, setIsUserOnPage] = useState(true);
-  const [containerHeight, setContainerHeight] = useState<any>(
-    window.visualViewport?.height || window.innerHeight
-  );
+  const [title, setTitle] = useState("Chetty");
+  const [hasUnseenMessage, setHasUnseenMessage] = useState(false);
+  // const [containerHeight, setContainerHeight] = useState<any>(
+  //   window.visualViewport?.height || window.innerHeight
+  // );
 
   useEffect(() => {
     if (session.status === "loading") return;
   }, []);
+
+  const checkMessages = () => {
+    setHasUnseenMessage(false);
+    messages.map((message) => {
+      if (
+        !message.isSeen &&
+        !isuserOnPage &&
+        message.email !== session.data?.user?.email &&
+        !("isTyping" in message)
+      ) {
+        setTitle("New message arrived!");
+        return;
+      }
+
+      if (!message.isSeen) {
+        setHasUnseenMessage(true);
+      }
+    });
+
+    if (!hasUnseenMessage) {
+      setTitle("Chetty");
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(checkMessages, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [messages]);
 
   const ScrollToBottom = () => {
     // Component to scroll to the bottom of the chat
@@ -46,23 +79,23 @@ function ChatPage() {
   };
 
   //! Change viewport height
-  useEffect(() => {
-    const updateHeight = () => {
-      const newHeight = window.visualViewport?.height || window.innerHeight;
-      setContainerHeight(newHeight);
+  // useEffect(() => {
+  //   const updateHeight = () => {
+  //     const newHeight = window.visualViewport?.height || window.innerHeight;
+  //     setContainerHeight(newHeight);
 
-      // Change body's maximum height
-      document.body.style.maxHeight = `${newHeight}px`;
-    };
+  //     // Change body's maximum height
+  //     document.body.style.maxHeight = `${newHeight}px`;
+  //   };
 
-    window.addEventListener("resize", updateHeight);
-    window.addEventListener("orientationchange", updateHeight);
+  //   window.addEventListener("resize", updateHeight);
+  //   window.addEventListener("orientationchange", updateHeight);
 
-    return () => {
-      window.removeEventListener("resize", updateHeight);
-      window.removeEventListener("orientationchange", updateHeight);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("resize", updateHeight);
+  //     window.removeEventListener("orientationchange", updateHeight);
+  //   };
+  // }, []);
 
   //! When user leaves the page
   useEffect(() => {
@@ -175,6 +208,7 @@ function ChatPage() {
 
   return (
     <>
+      <title>{title}</title>
       {/* <AnimatedBackground containerHeight={containerHeight} /> */}
       <div
         className={`container mx-auto max-w-4xl p-2 px-0 pr-2 flex flex-col h-[100dvh] max-h-[100dvh]`}
@@ -187,15 +221,12 @@ function ChatPage() {
             "flex flex-col items-center justify-center"
           }`}
         >
-          {messageLoading && (
-            <span className="loading loading-spinner w-[2rem] opacity-70 text-white" />
-          )}
-          {!messages.length && <p>No messages yet!</p>}
+          {!messages.length && !messageLoading && <p>No messages yet!</p>}
           {messages.map((message, index) => (
             <React.Fragment key={index}>
               {message.email !== session.data?.user?.email &&
                 isuserOnPage &&
-                void updateSeenBy(message.createdAt)}
+                void updateIsSeen(message.createdAt)}
               {message.email === session.data?.user?.email ? (
                 <>
                   {!message.isTyping && (

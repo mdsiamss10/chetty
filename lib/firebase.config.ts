@@ -6,12 +6,13 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBzDxXhbsf1WC6hdRJPwYtlKJ1_8RYQilk",
-  authDomain: "chettyappbysiam.firebaseapp.com",
-  projectId: "chettyappbysiam",
-  storageBucket: "chettyappbysiam.appspot.com",
-  messagingSenderId: "839203325078",
-  appId: "1:839203325078:web:d64245d6fd25d844452eb7",
+  apiKey: "AIzaSyAGlfyJS9jUvPhpztewXNwOgUBPY7K9glI",
+  authDomain: "chatappbysiam.firebaseapp.com",
+  projectId: "chatappbysiam",
+  storageBucket: "chatappbysiam.appspot.com",
+  messagingSenderId: "1093697391581",
+  appId: "1:1093697391581:web:7182a9a59174c84f0d0434",
+  measurementId: "G-KYWZVRLRWD",
 };
 
 // Initialize Firebase

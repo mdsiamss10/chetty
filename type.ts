@@ -8,4 +8,5 @@ export interface MessageType {
   timestamp?: any;
   serverTimestamp?: any;
   email?: string;
+  isDeleted?: boolean;
 }

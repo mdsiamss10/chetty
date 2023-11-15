@@ -1,8 +1,10 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
+  onSnapshot,
   query,
   serverTimestamp,
   setDoc,
@@ -56,7 +58,8 @@ export async function addIsTypingToUserColl(
   });
 }
 
-export async function updateSeenBy(createdAt: Date) {
+//! Update isSeen property in message by using createdAt for finding and updating the message, it is working like the message id.
+export async function updateIsSeen(createdAt: Date) {
   const messageColRef = collection(db, "messages");
   const messageQuery = query(
     messageColRef,
@@ -67,5 +70,16 @@ export async function updateSeenBy(createdAt: Date) {
   querySnapshot.forEach(async ({ id }) => {
     const messageDocRef = doc(db, "messages", id);
     await setDoc(messageDocRef, { isSeen: true }, { merge: true });
+  });
+}
+
+export async function deleteMessage() {
+  const collectionRef = collection(db, "messages");
+  const q = query(collectionRef);
+  onSnapshot(q, (snapshots) => {
+    snapshots.docs.map((dbDoc) => {
+      const docRef = doc(db, "messages", dbDoc.id);
+      void deleteDoc(docRef);
+    });
   });
 }
