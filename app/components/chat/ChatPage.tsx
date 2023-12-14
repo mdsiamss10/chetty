@@ -6,6 +6,7 @@ import { addIsTypingToUserColl, updateIsSeen } from "@/actions"; // Importing ac
 import { db } from "@/lib/firebase.config"; // Importing Firebase configuration
 import { MessageType } from "@/type"; // Importing MessageType type
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore"; // Importing Firestore functions
+import type { Metadata } from "next";
 import { useSession } from "next-auth/react"; // Importing useSession hook from next-auth
 import React, { useEffect, useRef, useState } from "react"; // Importing React and its hooks/components
 import PasswordModal from "./PasswordModal"; // Importing PasswordModal component
@@ -13,6 +14,11 @@ import Form from "./form/Form"; // Importing Form component
 import MessageFromMe from "./messages/MessageFromMe"; // Importing MessageFromMe component
 import MessageFromOther from "./messages/MessageFromOther"; // Importing MessageFromOther component
 import Navbar from "./navbar/Navbar"; // Importing Navbar component
+
+export const metadata: Metadata = {
+  title: "Chetty - Chat",
+  description: "Chetty chat page",
+};
 
 function ChatPage() {
   const session = useSession(); // Using the useSession hook to get authentication status

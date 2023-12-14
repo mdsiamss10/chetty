@@ -1,7 +1,13 @@
 "use client"; // Importing "use client" (it seems like a custom import, not standard JavaScript/React)
 
 import { motion } from "framer-motion"; // Importing motion from framer-motion library
+import type { Metadata } from "next";
 import LoginButton from "./LoginButton"; // Importing LoginButton component
+
+export const metadata: Metadata = {
+  title: "Chetty - Login",
+  description: "Chetty login page",
+};
 
 function LoginPage() {
   return (
